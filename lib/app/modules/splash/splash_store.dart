@@ -1,15 +1,16 @@
+import 'package:minisocial/app/shared/controllers/auth_controller.dart';
 import 'package:mobx/mobx.dart';
 
 part 'splash_store.g.dart';
 
 class SplashStore = _SplashStoreBase with _$SplashStore;
+
 abstract class _SplashStoreBase with Store {
+  final AuthController authController;
 
-  @observable
-  int value = 0;
+  _SplashStoreBase({required this.authController});
 
-  @action
-  void increment() {
-    value++;
-  } 
+  Future loginWithLocalData() async {
+    authController.loginWithLocalData();
+  }
 }

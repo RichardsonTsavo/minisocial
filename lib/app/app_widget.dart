@@ -5,7 +5,8 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Mini social',
+      title: 'Minisocial',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
       routerDelegate: Modular.routerDelegate,
       routeInformationParser: Modular.routeInformationParser,

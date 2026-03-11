@@ -5,7 +5,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 class RegisterModule extends Module {
   @override
   void binds(Injector i) {
-    i.add<RegisterStore>(RegisterStore.new);
+    i.add<RegisterStore>(() => RegisterStore(authController: Modular.get()));
   }
 
   @override

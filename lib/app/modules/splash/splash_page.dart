@@ -8,17 +8,25 @@ class SplashPage extends StatefulWidget {
   @override
   SplashPageState createState() => SplashPageState();
 }
+
 class SplashPageState extends State<SplashPage> {
   final SplashStore store = Modular.get();
 
   @override
+  void initState() {
+    super.initState();
+    store.loginWithLocalData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Column(
-        children: <Widget>[],
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 15,
+          children: [Text("MiniSocial"), CircularProgressIndicator()],
+        ),
       ),
     );
   }

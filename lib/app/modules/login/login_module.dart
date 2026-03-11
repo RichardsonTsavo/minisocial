@@ -5,7 +5,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 class LoginModule extends Module {
   @override
   void binds(Injector i) {
-    i.add<LoginStore>(LoginStore.new);
+    i.add<LoginStore>(() => LoginStore(authController: Modular.get()));
   }
 
   @override

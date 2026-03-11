@@ -6,12 +6,15 @@ import 'package:minisocial/app/modules/login/login_module.dart';
 import 'package:minisocial/app/modules/post_detail/post_detail_module.dart';
 import 'package:minisocial/app/modules/profile/profile_module.dart';
 import 'package:minisocial/app/modules/register/register_module.dart';
+import 'package:minisocial/app/shared/controllers/auth_controller.dart';
 
 import 'modules/splash/splash_module.dart';
 
 class AppModule extends Module {
   @override
-  void binds(Injector i) {}
+  void binds(Injector i) {
+    i.addSingleton<AuthController>(AuthController.new);
+  }
 
   @override
   void routes(RouteManager r) {
