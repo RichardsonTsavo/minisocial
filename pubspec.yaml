@@ -24,11 +24,23 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  flutter_modular: ^6.4.1
+  mobx: ^2.6.0
+  flutter_mobx: ^2.3.0
+  dio: ^5.9.2
+  image_picker: ^1.2.1
+  shared_preferences: ^2.5.4
+  local_auth: ^3.0.1
+  flutter_form_builder: ^10.3.0+2
+  geolocator: ^14.0.2
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  mobx_codegen: ^2.7.6
+  build_runner: ^2.12.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
