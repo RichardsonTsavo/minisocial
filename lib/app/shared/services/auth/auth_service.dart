@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:minisocial/app/shared/models/file/file_data_model.dart';
 import 'package:minisocial/app/shared/models/user/user_model.dart';
 import 'package:minisocial/app/shared/services/prefs/prefs_service.dart';
 
@@ -47,12 +48,16 @@ class AuthService {
 
       if (token == tokenTeste) {
         data = {
+          "id": 0124545,
           "name": "Admin admin",
           "email": "admin@minisocial.com",
-          "nickName": "admin",
-          "userImage": null,
+          "username": "admin",
+          "avatar": {"url": "https://picsum.photos/300/300?0"},
           "faviorites": [],
           "bio": "",
+          "postsCount": 6,
+          "followersCount": 5,
+          "followingCount": 12,
         };
       }
 

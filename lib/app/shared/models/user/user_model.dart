@@ -7,18 +7,25 @@ class UserModel {
   int? id;
   String? name;
   String? email;
-  String? nickName;
-  FileDataModel? userImage;
+  String? username;
+  FileDataModel? avatar;
   List<String>? faviorites;
   String? bio;
+  int? postsCount;
+  int? followersCount;
+  int? followingCount;
+
   UserModel({
     this.id,
     this.name,
     this.email,
-    this.nickName,
-    this.userImage,
+    this.username,
+    this.avatar,
     this.faviorites,
     this.bio,
+    this.postsCount,
+    this.followersCount,
+    this.followingCount,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,10 +33,13 @@ class UserModel {
       'id': id,
       'name': name,
       'email': email,
-      'nickName': nickName,
-      'userImage': userImage?.toMap(),
+      'username': username,
+      'avatar': avatar?.toMap(),
       'faviorites': faviorites ?? [],
       'bio': bio ?? "",
+      'postsCount': postsCount,
+      'followersCount': followersCount,
+      'followingCount': followingCount,
     };
   }
 
@@ -38,14 +48,15 @@ class UserModel {
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] != null ? map['name'] as String : null,
       email: map['email'] != null ? map['email'] as String : null,
-      nickName: map['nickName'] != null ? map['nickName'] as String : null,
-      userImage: map['userImage'] != null
-          ? FileDataModel.fromMap(map['userImage'])
-          : null,
+      username: map['username'] != null ? map['username'] as String : null,
+      avatar: map['avatar'] != null ? FileDataModel.fromMap(map['avatar']) : null,
       faviorites: map['faviorites'] != null
           ? List<String>.from((map['faviorites']))
           : null,
       bio: map['bio'] != null ? map['bio'] as String : null,
+      postsCount: map['postsCount'] != null ? map['postsCount'] as int : null,
+      followersCount: map['followersCount'] != null ? map['followersCount'] as int : null,
+      followingCount: map['followingCount'] != null ? map['followingCount'] as int : null,
     );
   }
 
@@ -58,19 +69,25 @@ class UserModel {
     int? id,
     String? name,
     String? email,
-    String? nickName,
-    FileDataModel? userImage,
+    String? username,
+    FileDataModel? avatar,
     List<String>? faviorites,
     String? bio,
+    int? postsCount,
+    int? followersCount,
+    int? followingCount,
   }) {
     return UserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
-      nickName: nickName ?? this.nickName,
-      userImage: userImage ?? this.userImage,
+      username: username ?? this.username,
+      avatar: avatar ?? this.avatar,
       faviorites: faviorites ?? this.faviorites,
       bio: bio ?? this.bio,
+      postsCount: postsCount ?? this.postsCount,
+      followingCount: followersCount ?? this.followingCount,
+      followersCount: followersCount ?? this.followersCount,
     );
   }
 }

@@ -5,11 +5,14 @@ import 'package:flutter_modular/flutter_modular.dart';
 class PostDetailModule extends Module {
   @override
   void binds(Injector i) {
-    i.add<PostDetailStore>(PostDetailStore.new);
+    i.add<PostDetailStore>(
+      () =>
+          PostDetailStore(authController: Modular.get(), postsRepository: Modular.get()),
+    );
   }
 
   @override
   void routes(r) {
-    r.child('/', child: (context) => const PostDetailPage());
+    r.child('/', child: (context) => PostDetailPage(post: r.args.data));
   }
 }

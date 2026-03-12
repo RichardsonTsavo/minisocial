@@ -12,7 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   late final HomeStore store;
 
   @override
@@ -24,17 +23,21 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Counter'),
-      ),
-      body: Observer(
-        builder: (context) => Text('${store.counter}'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          store.increment();
+      body: const RouterOutlet(),
+      bottomNavigationBar: Observer(
+        builder: (context) {
+          return BottomNavigationBar(
+            currentIndex: store.currentIndex,
+            onTap: store.changeTab,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.add_box), label: "Criar Post"),
+
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: "Feed"),
+
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
+            ],
+          );
         },
-        child: Icon(Icons.add),
       ),
     );
   }

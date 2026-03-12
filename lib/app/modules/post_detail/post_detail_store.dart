@@ -1,15 +1,28 @@
+import 'package:minisocial/app/shared/models/posts/comment_model.dart';
+import 'package:minisocial/app/shared/models/posts/post_model.dart';
+import 'package:minisocial/app/shared/repositories/posts/posts_repository.dart';
 import 'package:mobx/mobx.dart';
+
+import '../../shared/controllers/auth_controller.dart';
 
 part 'post_detail_store.g.dart';
 
 class PostDetailStore = _PostDetailStoreBase with _$PostDetailStore;
 
 abstract class _PostDetailStoreBase with Store {
-  @observable
-  int value = 0;
+  final AuthController authController;
+  final PostsRepository postsRepository;
 
-  @action
-  void increment() {
-    value++;
+  late PostModel postModel;
+
+  _PostDetailStoreBase({required this.authController, required this.postsRepository});
+
+  int getUserId() => authController.getUserId();
+
+  Future<List<CommentModel>> getComments() {
+    return postsRepository.getComments(
+      postId: postModel.id!,
+      amountComments: postModel.commentsCount!,
+    );
   }
 }
