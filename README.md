@@ -69,11 +69,7 @@ dispositivo.
 
 O projeto utiliza uma arquitetura modular baseada em features.
 
-lib/app
-
-- modules
-
-
+```
 lib/app
 ├── modules/
 │ ├── login/
@@ -93,6 +89,7 @@ lib/app
 │
 ├── app_module.dart
 └── app_widget.dart
+```
 
 Essa organização permite separar responsabilidades e facilita a escalabilidade da
 aplicação.
