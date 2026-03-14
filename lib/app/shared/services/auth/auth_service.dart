@@ -1,35 +1,59 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:minisocial/app/shared/models/file/file_data_model.dart';
 import 'package:minisocial/app/shared/models/user/user_model.dart';
+import 'package:minisocial/app/shared/services/http/http_service.dart';
 import 'package:minisocial/app/shared/services/prefs/prefs_service.dart';
 
+import '../../utils/utils.dart';
+
 class AuthService {
-  final Dio _dio = Dio();
+  HttpService httpService = Modular.get();
   final PrefsService _prefs = PrefsService();
-  String tokenTeste =
-      "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTc3MzI0NTgxOCwiaWF0IjoxNzczMjQ1ODE4fQ.T1BWbki4R4A_Phf-64TpBY5dg1TvM5jdduC3nzTz4HI";
 
-  /// TODO implementar login na api
   Future login({required String email, required String password}) async {
-    await Future.delayed(const Duration(seconds: 1));
-    if (email == "admin@minisocial.com" && password == "123456") {
-      await _prefs.setString(key: "userToken", value: tokenTeste);
-      return tokenTeste;
+    try {
+      final response = await httpService.dio.post(
+        "/auth/login",
+        data: {"email": email, "password": password},
+      );
+      String token = response.data;
+      await _prefs.setString(key: "userToken", value: token);
+      httpService.setToken(token);
+      return token;
+    } on DioException catch (e) {
+      Utils.showError(e.response?.data);
+      return null;
     }
-
-    return null;
   }
 
-  /// TODO implementar registro na api
-  Future register({required UserModel user}) async {
-    await Future.delayed(const Duration(seconds: 1));
-    await _prefs.setString(key: "userToken", value: tokenTeste);
-    return tokenTeste;
+  Future register({required UserModel user, required String password}) async {
+    try {
+      var response = await httpService.dio.post(
+        "/auth/register",
+        data: {
+          "name": user.name,
+          "email": user.email,
+          "username": user.username!.replaceAll(" ", "_"),
+          "password": password,
+        },
+      );
+      String token = response.data;
+
+      await _prefs.setString(key: "userToken", value: token);
+      httpService.setToken(token);
+      return token;
+    } on DioException catch (e) {
+      Utils.showError(e.response?.data);
+      return null;
+    }
   }
 
   Future<String?> getLocalUserToken() async {
-    return await _prefs.getString(key: "userToken");
+    String? token = await _prefs.getString(key: "userToken");
+    if (token != null) {
+      httpService.setToken(token);
+    }
+    return token;
   }
 
   Future<UserModel?> getLocalUserData() async {
@@ -40,29 +64,13 @@ class AuthService {
     return null;
   }
 
-  /// TODO Implementar get na api
-  Future<UserModel?> getUserData({required String token}) async {
+  Future<UserModel?> fetchUserData() async {
     try {
-      await Future.delayed(const Duration(seconds: 1));
-      Map<String, dynamic>? data;
+      final response = await httpService.dio.get("/auth/me");
 
-      if (token == tokenTeste) {
-        data = {
-          "id": 0124545,
-          "name": "Admin admin",
-          "email": "admin@minisocial.com",
-          "username": "admin",
-          "avatar": {"url": "https://picsum.photos/300/300?0"},
-          "faviorites": [],
-          "bio": "",
-          "postsCount": 6,
-          "followersCount": 5,
-          "followingCount": 12,
-        };
-      }
-
+      final data = response.data;
       if (data != null) {
-        await _prefs.setObject(key: "userData", value: data);
+        await _prefs.setObject(key: "userData", value: response.data);
         UserModel user = UserModel.fromMap(data);
         return user;
       }
@@ -75,6 +83,7 @@ class AuthService {
   Future logout() async {
     await _prefs.remove(key: "userToken");
     await _prefs.remove(key: "userData");
+    httpService.clearToken();
     Modular.to.navigate("/");
   }
 }

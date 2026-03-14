@@ -8,12 +8,14 @@ import 'package:minisocial/app/shared/controllers/auth_controller.dart';
 
 import 'modules/splash/splash_module.dart';
 import 'shared/repositories/posts/posts_repository.dart';
+import 'shared/services/http/http_service.dart';
 
 class AppModule extends Module {
   @override
   void binds(Injector i) {
+    i.addSingleton<HttpService>(HttpService.new);
     i.addSingleton<AuthController>(AuthController.new);
-    i.add<PostsRepository>(() => PostsRepository(Dio()));
+    i.add<PostsRepository>(PostsRepository.new);
   }
 
   @override

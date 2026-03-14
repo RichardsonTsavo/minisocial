@@ -11,7 +11,11 @@ class PostMediaWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (post.type!) {
       case PostType.image:
-        return Image.network(post.mediaUrl!, fit: BoxFit.cover, width: double.infinity);
+        return Image.network(
+          post.media!.url!.replaceAll("http://localhost:8080/", "http://10.0.2.2:8080/"),
+          fit: BoxFit.cover,
+          width: double.infinity,
+        );
 
       case PostType.video:
         return Stack(

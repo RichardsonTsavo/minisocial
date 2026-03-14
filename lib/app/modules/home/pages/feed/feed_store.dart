@@ -15,7 +15,7 @@ abstract class _FeedStoreBase with Store {
   @observable
   List<PostModel> posts = [];
 
-  int page = 1;
+  int page = 0;
   final int limit = 10;
 
   @observable

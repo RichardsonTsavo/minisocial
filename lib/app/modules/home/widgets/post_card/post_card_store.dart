@@ -30,6 +30,6 @@ abstract class PostCardStoreBase with Store {
   }
 
   Future<List<CommentModel>> getComments() async {
-    return repository.getComments(postId: post.id!, amountComments: post.commentsCount!);
+    return repository.getComments(postId: post.id!);
   }
 }

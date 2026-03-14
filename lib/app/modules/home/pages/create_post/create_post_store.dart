@@ -1,13 +1,53 @@
 import 'dart:io';
+import 'package:geolocator/geolocator.dart';
+import 'package:minisocial/app/shared/enums/post_type.dart';
+import 'package:minisocial/app/shared/models/file/file_data_model.dart';
 import 'package:mobx/mobx.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
+
+import '../../../../shared/models/file/file_metadata_model.dart';
+import '../../../../shared/repositories/posts/posts_repository.dart';
 
 part 'create_post_store.g.dart';
 
 class CreatePostStore = _CreatePostStoreBase with _$CreatePostStore;
 
 abstract class _CreatePostStoreBase with Store {
+  final PostsRepository postsRepository;
+
+  _CreatePostStoreBase(this.postsRepository);
+
+  Future<Position?> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Verifica se o GPS/serviço de localização está ativo
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return null;
+    }
+
+    // Verifica permissões
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return null;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return null;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    return position;
+  }
+
   @observable
   bool isLoading = false;
   @observable
@@ -70,5 +110,30 @@ abstract class _CreatePostStoreBase with Store {
 
     selected = asset;
     gallery.insert(0, asset);
+  }
+
+  @action
+  Future createPost({required String caption}) async {
+    isLoading = true;
+    Position? position = await getCurrentLocation();
+    if (selected == null) {
+      isLoading = false;
+      return;
+    }
+    await postsRepository.createPost(
+      image: FileDataModel(
+        bytes: await selected!.originBytes,
+        fileName: selected!.title,
+        metadata: FileMetadataModel(
+          contentType: selected!.mimeType,
+          createdAt: DateTime.now(),
+          type: PostType.image,
+          lat: position!.latitude,
+          lng: position.longitude,
+        ),
+      ),
+      caption: caption,
+    );
+    isLoading = false;
   }
 }

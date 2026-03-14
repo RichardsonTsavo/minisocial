@@ -101,6 +101,18 @@ mixin _$CreatePostStore on _CreatePostStoreBase, Store {
     return _$takePhotoAsyncAction.run(() => super.takePhoto());
   }
 
+  late final _$createPostAsyncAction = AsyncAction(
+    '_CreatePostStoreBase.createPost',
+    context: context,
+  );
+
+  @override
+  Future<dynamic> createPost({required String caption}) {
+    return _$createPostAsyncAction.run(
+      () => super.createPost(caption: caption),
+    );
+  }
+
   late final _$_CreatePostStoreBaseActionController = ActionController(
     name: '_CreatePostStoreBase',
     context: context,

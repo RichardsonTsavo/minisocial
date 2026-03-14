@@ -1,14 +1,16 @@
 import 'dart:convert';
 
+import 'package:minisocial/app/shared/models/file/file_data_model.dart';
+
 import '../../enums/post_type.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class PostModel {
-  String? id;
+  int? id;
   int? userId;
   String? userName;
-  String? userAvatar;
-  String? mediaUrl;
+  FileDataModel? userAvatar;
+  FileDataModel? media;
   String? caption;
   PostType? type;
   int? likesCount;
@@ -21,7 +23,7 @@ class PostModel {
     this.userId,
     this.userName,
     this.userAvatar,
-    this.mediaUrl,
+    this.media,
     this.caption,
     this.type,
     this.likesCount,
@@ -37,7 +39,7 @@ class PostModel {
       'userId': userId,
       'userName': userName,
       'userAvatar': userAvatar,
-      'mediaUrl': mediaUrl,
+      'media': media,
       'caption': caption,
       'type': type?.name,
       'likesCount': likesCount ?? 0,
@@ -50,11 +52,13 @@ class PostModel {
 
   factory PostModel.fromMap(Map<String, dynamic> map) {
     return PostModel(
-      id: map['id'] != null ? map['id'] as String : null,
+      id: map['id'] != null ? map['id'] as int : null,
       userId: map['userId'] != null ? map['userId'] as int : null,
       userName: map['userName'] != null ? map['userName'] as String : null,
-      userAvatar: map['userAvatar'] != null ? map['userAvatar'] as String : null,
-      mediaUrl: map['mediaUrl'] != null ? map['mediaUrl'] as String : null,
+      userAvatar: map['userAvatar'] != null
+          ? FileDataModel.fromJson(map['userAvatar'])
+          : null,
+      media: map['media'] != null ? FileDataModel.fromJson(map['media']) : null,
       caption: map['caption'] != null ? map['caption'] as String : null,
       type: map['type'] != null ? PostType.values.byName(map['type']) : null,
       likesCount: map['likesCount'] != null ? map['likesCount'] as int : 0,
@@ -71,11 +75,11 @@ class PostModel {
       PostModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   PostModel copyWith({
-    String? id,
+    int? id,
     int? userId,
     String? userName,
-    String? userAvatar,
-    String? mediaUrl,
+    FileDataModel? userAvatar,
+    FileDataModel? media,
     String? caption,
     PostType? type,
     int? likesCount,
@@ -89,7 +93,7 @@ class PostModel {
       userId: userId ?? this.userId,
       userName: userName ?? this.userName,
       userAvatar: userAvatar ?? this.userAvatar,
-      mediaUrl: mediaUrl ?? this.mediaUrl,
+      media: media ?? this.media,
       caption: caption ?? this.caption,
       type: type ?? this.type,
       likesCount: likesCount ?? this.likesCount,

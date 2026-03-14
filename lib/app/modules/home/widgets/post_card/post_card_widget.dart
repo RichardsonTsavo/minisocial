@@ -42,7 +42,7 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   CircleAvatar(
                     radius: 18,
-                    backgroundImage: NetworkImage(store.post.userAvatar!),
+                    backgroundImage: NetworkImage(store.post.userAvatar!.url!),
                   ),
 
                   const SizedBox(width: 10),
@@ -66,7 +66,7 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   Observer(
                     builder: (context) {
-                      return GestureDetector(
+                      return InkWell(
                         onTap: () {
                           store.like();
                           widget.onLike?.call();
@@ -97,7 +97,7 @@ class _PostCardState extends State<PostCard> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      GestureDetector(
+                      InkWell(
                         onTap: () {
                           showModalBottomSheet(
                             context: context,
@@ -158,7 +158,7 @@ class _PostCardState extends State<PostCard> {
                                                 return ListTile(
                                                   leading: CircleAvatar(
                                                     backgroundImage: NetworkImage(
-                                                      comment.userAvatar!,
+                                                      comment.userAvatar!.url!,
                                                     ),
                                                   ),
                                                   title: Text(
@@ -189,13 +189,13 @@ class _PostCardState extends State<PostCard> {
                     ],
                   ),
 
-                  const Icon(Icons.send_outlined, size: 26),
+                  InkWell(onTap: () {}, child: const Icon(Icons.send_outlined, size: 26)),
 
                   const Spacer(),
 
                   Observer(
                     builder: (context) {
-                      return GestureDetector(
+                      return InkWell(
                         onTap: () {
                           store.salve();
                           widget.onSave?.call();

@@ -69,14 +69,14 @@ class RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
 
                   FormBuilderTextField(
-                    name: "nickName",
+                    name: "username",
                     decoration: const InputDecoration(
-                      labelText: "NickName",
+                      labelText: "Username",
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "NickName é obrigatório";
+                        return "Username é obrigatório";
                       }
                       return null;
                     },

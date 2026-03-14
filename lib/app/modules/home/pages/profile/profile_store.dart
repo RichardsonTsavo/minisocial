@@ -22,9 +22,10 @@ abstract class _ProfileStoreBase with Store {
   int getFollowingCount() => authController.getFollowingCount();
 
   Future<List<PostModel>> getMyPosts() async {
-    return postsRepository.getMyPosts(
-      userId: authController.getUserId(),
-      limit: getPostsCount(),
-    );
+    return postsRepository.getMyPosts(userId: authController.getUserId());
+  }
+
+  void logout() {
+    authController.logout();
   }
 }

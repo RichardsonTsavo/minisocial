@@ -33,8 +33,9 @@ class FileDataModel {
 
   String toJson() => json.encode(toMap());
 
-  factory FileDataModel.fromJson(String source) =>
-      FileDataModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory FileDataModel.fromJson(String source) {
+    return FileDataModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  }
 
   FileDataModel copyWith({
     String? fileName,

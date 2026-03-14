@@ -9,7 +9,6 @@ class UserModel {
   String? email;
   String? username;
   FileDataModel? avatar;
-  List<String>? faviorites;
   String? bio;
   int? postsCount;
   int? followersCount;
@@ -21,7 +20,6 @@ class UserModel {
     this.email,
     this.username,
     this.avatar,
-    this.faviorites,
     this.bio,
     this.postsCount,
     this.followersCount,
@@ -35,7 +33,6 @@ class UserModel {
       'email': email,
       'username': username,
       'avatar': avatar?.toMap(),
-      'faviorites': faviorites ?? [],
       'bio': bio ?? "",
       'postsCount': postsCount,
       'followersCount': followersCount,
@@ -49,9 +46,8 @@ class UserModel {
       name: map['name'] != null ? map['name'] as String : null,
       email: map['email'] != null ? map['email'] as String : null,
       username: map['username'] != null ? map['username'] as String : null,
-      avatar: map['avatar'] != null ? FileDataModel.fromMap(map['avatar']) : null,
-      faviorites: map['faviorites'] != null
-          ? List<String>.from((map['faviorites']))
+      avatar: map['avatar'] != null
+          ? FileDataModel.fromJson(map['avatar'].toString())
           : null,
       bio: map['bio'] != null ? map['bio'] as String : null,
       postsCount: map['postsCount'] != null ? map['postsCount'] as int : null,
@@ -71,7 +67,6 @@ class UserModel {
     String? email,
     String? username,
     FileDataModel? avatar,
-    List<String>? faviorites,
     String? bio,
     int? postsCount,
     int? followersCount,
@@ -83,7 +78,6 @@ class UserModel {
       email: email ?? this.email,
       username: username ?? this.username,
       avatar: avatar ?? this.avatar,
-      faviorites: faviorites ?? this.faviorites,
       bio: bio ?? this.bio,
       postsCount: postsCount ?? this.postsCount,
       followingCount: followersCount ?? this.followingCount,

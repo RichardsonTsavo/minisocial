@@ -103,7 +103,7 @@ class LoginPageState extends State<LoginPage> {
 
                     TextButton(
                       onPressed: () {
-                        Modular.to.pushNamed("/register");
+                        Modular.to.pushNamed("/register/");
                       },
                       child: const Text("Criar conta"),
                     ),

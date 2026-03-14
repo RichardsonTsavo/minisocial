@@ -1,3 +1,4 @@
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:minisocial/app/modules/home/pages/create_post/create_post_store.dart';
@@ -14,6 +15,7 @@ class CreatePostPage extends StatefulWidget {
 class CreatePostPageState extends State<CreatePostPage> {
   final CreatePostStore store = Modular.get();
   PageController pageController = PageController(initialPage: 0);
+  GlobalKey<FormBuilderState> formkey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
@@ -52,6 +54,15 @@ class CreatePostPageState extends State<CreatePostPage> {
                                   duration: Duration(milliseconds: 300),
                                   curve: Curves.easeIn,
                                 );
+                              }
+
+                              if (store.page == 1) {
+                                if (formkey.currentState != null &&
+                                    formkey.currentState!.saveAndValidate()) {
+                                  await store.createPost(
+                                    caption: formkey.currentState!.value['caption'],
+                                  );
+                                }
                               }
                             },
                       child: Text(store.page == 0 ? "Avançar" : "Publicar"),
@@ -142,67 +153,80 @@ class CreatePostPageState extends State<CreatePostPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Observer(
-                        builder: (_) {
-                          if (store.selected == null) {
-                            return const SizedBox();
-                          }
+                  child: FormBuilder(
+                    key: formkey,
+                    child: Column(
+                      children: [
+                        Observer(
+                          builder: (_) {
+                            if (store.selected == null) {
+                              return const SizedBox();
+                            }
 
-                          return FutureBuilder(
-                            future: store.selected!.file,
-                            builder: (_, snapshot) {
-                              if (!snapshot.hasData) {
-                                return const SizedBox();
-                              }
+                            return FutureBuilder(
+                              future: store.selected!.file,
+                              builder: (_, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return const SizedBox();
+                                }
 
-                              return ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.file(
-                                  snapshot.data!,
-                                  height: 120,
-                                  width: 120,
-                                  fit: BoxFit.cover,
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      TextField(
-                        maxLines: 5,
-                        decoration: const InputDecoration(
-                          hintText: "Escreva uma legenda...",
-                          border: OutlineInputBorder(),
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.file(
+                                    snapshot.data!,
+                                    height: 120,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
-                        onChanged: (value) {},
-                      ),
 
-                      const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                      Observer(
-                        builder: (_) {
-                          return SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: store.isLoading
-                                  ? null
-                                  : () async {
-                                      // await store.createPost();
-                                      // Modular.to.navigate('/home');
-                                    },
-                              child: store.isLoading
-                                  ? const CircularProgressIndicator()
-                                  : const Text("Publicar"),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                        FormBuilderTextField(
+                          name: "caption",
+                          maxLines: 5,
+                          decoration: const InputDecoration(
+                            hintText: "Escreva uma legenda...",
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "campo Obrigatório";
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        Observer(
+                          builder: (_) {
+                            return SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: store.isLoading
+                                    ? null
+                                    : () async {
+                                        if (formkey.currentState!.saveAndValidate()) {
+                                          await store.createPost(
+                                            caption:
+                                                formkey.currentState!.value['caption'],
+                                          );
+                                        }
+                                      },
+                                child: store.isLoading
+                                    ? const CircularProgressIndicator()
+                                    : const Text("Publicar"),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

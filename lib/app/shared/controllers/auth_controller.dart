@@ -24,15 +24,15 @@ class AuthController {
   Future login({required String email, required String password}) async {
     String? token = await _authService.login(email: email, password: password);
     if (token != null) {
-      _userModels = await _authService.getUserData(token: token);
+      _userModels = await _authService.fetchUserData();
       Modular.to.navigate("/home/feed");
     }
   }
 
-  Future register({required UserModel user}) async {
-    String? token = await _authService.register(user: user);
+  Future register({required UserModel user, required String password}) async {
+    String? token = await _authService.register(user: user, password: password);
     if (token != null) {
-      _userModels = await _authService.getUserData(token: token);
+      _userModels = await _authService.fetchUserData();
       Modular.to.navigate("/home/feed");
     }
   }

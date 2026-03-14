@@ -1,6 +1,8 @@
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:minisocial/app/modules/post_detail/post_detail_store.dart';
 import 'package:flutter/material.dart';
+import 'package:minisocial/app/shared/utils/utils.dart';
 
 import '../../shared/models/posts/post_model.dart';
 import '../../shared/widgets/post_media_widget/post_media_widget.dart';
@@ -33,7 +35,7 @@ class PostDetailPageState extends State<PostDetailPage> {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                _showDeleteDialog(context, widget.post);
+                _showDeleteDialog(post: widget.post);
               },
             ),
         ],
@@ -43,19 +45,59 @@ class PostDetailPageState extends State<PostDetailPage> {
           children: [
             AspectRatio(aspectRatio: 1, child: PostMediaWidget(post: store.postModel)),
             Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Postado ${Utils.formatTime(store.postModel.media!.metadata!.createdAt!)}",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: FutureBuilder(
+                  future: Utils.getAddressFromLatLng(
+                    lat: store.postModel.media!.metadata!.lat!,
+                    lng: store.postModel.media!.metadata!.lng!,
+                  ),
+                  builder: (context, asyncSnapshot) {
+                    if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+                      return LinearProgressIndicator();
+                    }
+                    if (!asyncSnapshot.hasData) {
+                      return SizedBox();
+                    }
+                    return Text(
+                      "local: ${asyncSnapshot.data!}",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Padding(
               padding: EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    store.postModel.caption!,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Observer(
+                    builder: (context) {
+                      return Text(
+                        store.postModel.caption!,
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      );
+                    },
                   ),
                   if (store.getUserId() == store.postModel.userId)
                     IconButton(
                       color: Theme.of(context).primaryColor,
                       icon: const Icon(Icons.edit),
-                      onPressed: () {},
+                      onPressed: () async {
+                        await showEditCaptionDialog(post: widget.post);
+                      },
                     ),
                 ],
               ),
@@ -88,7 +130,7 @@ class PostDetailPageState extends State<PostDetailPage> {
                     final comment = asyncSnapshot.data![index];
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(comment.userAvatar!),
+                        backgroundImage: NetworkImage(comment.userAvatar!.url!),
                       ),
                       title: Text(
                         comment.userName!,
@@ -106,7 +148,7 @@ class PostDetailPageState extends State<PostDetailPage> {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, PostModel post) {
+  void _showDeleteDialog({required PostModel post}) {
     showDialog(
       context: context,
       builder: (_) {
@@ -120,11 +162,59 @@ class PostDetailPageState extends State<PostDetailPage> {
             ),
 
             TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Modular.to.pop();
+              onPressed: () async {
+                await store.deletePost(postId: post.id!);
               },
-              child: const Text("Excluir", style: TextStyle(color: Colors.red)),
+              child: Observer(
+                builder: (context) {
+                  if (store.isLoading) {
+                    return CircularProgressIndicator();
+                  }
+                  return const Text("Excluir", style: TextStyle(color: Colors.red));
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future showEditCaptionDialog({required PostModel post}) async {
+    final TextEditingController controller = TextEditingController(text: post.caption);
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Editar'),
+          content: TextField(
+            controller: controller,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              hintText: 'Digite o novo caption',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (controller.text != widget.post.caption!) {
+                  store.updatePost(postId: post.id!, caption: controller.text);
+                }
+              },
+              child: Observer(
+                builder: (context) {
+                  if (store.isLoading) {
+                    return CircularProgressIndicator();
+                  }
+                  return const Text('Salvar');
+                },
+              ),
             ),
           ],
         );

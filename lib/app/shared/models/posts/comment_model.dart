@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:minisocial/app/shared/models/file/file_data_model.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class CommentModel {
-  String? id;
+  int? id;
   String? userName;
-  String? userAvatar;
+  FileDataModel? userAvatar;
   String? comment;
   DateTime? createdAt;
   CommentModel({this.id, this.userName, this.userAvatar, this.comment, this.createdAt});
@@ -21,9 +23,11 @@ class CommentModel {
 
   factory CommentModel.fromMap(Map<String, dynamic> map) {
     return CommentModel(
-      id: map['id'] != null ? map['id'] as String : null,
+      id: map['id'] != null ? map['id'] as int : null,
       userName: map['userName'] != null ? map['userName'] as String : null,
-      userAvatar: map['userAvatar'] != null ? map['userAvatar'] as String : null,
+      userAvatar: map['userAvatar'] != null
+          ? FileDataModel.fromJson(map['userAvatar'])
+          : null,
       comment: map['comment'] != null ? map['comment'] as String : null,
       createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
     );
@@ -35,9 +39,9 @@ class CommentModel {
       CommentModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   CommentModel copyWith({
-    String? id,
+    int? id,
     String? userName,
-    String? userAvatar,
+    FileDataModel? userAvatar,
     String? comment,
     DateTime? createdAt,
   }) {

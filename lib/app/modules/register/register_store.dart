@@ -23,11 +23,11 @@ abstract class _RegisterStoreBase with Store {
     isLoading = true;
     final user = UserModel.fromMap(values);
 
-    await _register(user: user);
+    await _register(user: user, password: values['password']);
     isLoading = false;
   }
 
-  Future _register({required UserModel user}) async {
-    return await authController.register(user: user);
+  Future _register({required UserModel user, required String password}) async {
+    return await authController.register(user: user, password: password);
   }
 }

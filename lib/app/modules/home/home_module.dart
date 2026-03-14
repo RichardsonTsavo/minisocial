@@ -13,8 +13,8 @@ import 'pages/profile/profile_store.dart';
 class HomeModule extends Module {
   @override
   void binds(Injector i) {
-    i.add<HomeStore>(HomeStore.new);
-    i.add<CreatePostStore>(CreatePostStore.new);
+    i.addSingleton<HomeStore>(HomeStore.new);
+    i.add<CreatePostStore>(() => CreatePostStore(Modular.get()));
     i.add<ProfileStore>(
       () => ProfileStore(authController: Modular.get(), postsRepository: Modular.get()),
     );

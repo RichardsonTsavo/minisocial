@@ -1,88 +1,94 @@
 import 'package:dio/dio.dart';
-import 'dart:math';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:minisocial/app/modules/home/home_store.dart';
+import 'package:minisocial/app/shared/models/file/file_data_model.dart';
+import 'package:minisocial/app/shared/utils/utils.dart';
+
 import '../../models/posts/comment_model.dart';
 import '../../models/posts/post_model.dart';
+import '../../services/http/http_service.dart';
 
 class PostsRepository {
-  final Dio dio;
+  final HttpService httpService;
 
-  PostsRepository(this.dio);
+  PostsRepository(this.httpService);
 
   Future<List<PostModel>> getFeedPosts({int page = 1, int limit = 10}) async {
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final response = await httpService.dio.get(
+        '/posts/feed',
+        queryParameters: {'page': page, 'limit': limit},
+      );
 
-    final List<Map<String, dynamic>> data = List.generate(limit, (index) {
-      final postNumber = ((page - 1) * limit) + index + 1;
-      final random = Random();
-      return {
-        "id": "$postNumber",
-        "userId": postNumber,
-        "userName": "user_$postNumber",
-        "userAvatar": "https://i.pravatar.cc/150?img=$postNumber",
-        "mediaUrl": "https://picsum.photos/600/600?$postNumber",
-        "caption": "Post número $postNumber do MiniSocial 🚀",
-        "type": "image",
-        "likesCount": random.nextInt(50),
-        "commentsCount": random.nextInt(50),
-        "createdAt": DateTime.now()
-            .subtract(Duration(minutes: postNumber * 5))
-            .toIso8601String(),
-      };
-    });
+      List data = response.data["content"];
 
-    data.shuffle();
-    return data.map((post) => PostModel.fromMap(post)).toList();
+      return data.map((json) {
+        return PostModel.fromMap(json);
+      }).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
-  Future<List<PostModel>> getMyPosts({
-    required int userId,
-    int page = 1,
-    int limit = 10,
-  }) async {
-    await Future.delayed(const Duration(seconds: 1));
-
-    final random = Random();
-
-    final List<Map<String, dynamic>> data = List.generate(limit, (index) {
-      final postNumber = ((page - 1) * limit) + index + 1;
-
-      return {
-        "id": "post_$postNumber",
-        "userId": userId,
-        "userName": "meu_usuario",
-        "userAvatar": "https://i.pravatar.cc/150?img=1",
-        "mediaUrl": "https://picsum.photos/600/600?random=$postNumber",
-        "caption": "Meu post número $postNumber 🚀",
-        "type": "image",
-        "likesCount": random.nextInt(200),
-        "commentsCount": random.nextInt(50),
-        "createdAt": DateTime.now()
-            .subtract(Duration(minutes: random.nextInt(500)))
-            .toIso8601String(),
-      };
-    });
-
-    return data.map((post) => PostModel.fromMap(post)).toList();
+  Future<bool> deletePost({required int postId}) async {
+    try {
+      await httpService.dio.delete('/posts/$postId');
+      Modular.to.pop();
+      Modular.to.pop(true);
+      return true;
+    } on DioException catch (e) {
+      Utils.showError(e.response?.data);
+      return false;
+    }
   }
 
-  Future<List<CommentModel>> getComments({
-    required String postId,
-    required int amountComments,
-  }) async {
-    await Future.delayed(const Duration(seconds: 1));
+  Future<bool> updatePost({required int postId, required String caption}) async {
+    try {
+      await httpService.dio.put('/posts/$postId', data: {"caption": caption});
+      Modular.to.pop(true);
+      return true;
+    } on DioException catch (e) {
+      Utils.showError(e.response?.data);
+      return false;
+    }
+  }
 
-    final List<Map<String, dynamic>> data = List.generate(amountComments, (index) {
-      return {
-        "id": "$index",
-        "userName": "user_$index",
-        "userAvatar": "https://i.pravatar.cc/150?img=${index + 10}",
-        "comment": "Comentário $index no post $postId",
-        "createdAt": DateTime.now()
-            .subtract(Duration(minutes: index * 5))
-            .toIso8601String(),
-      };
-    });
+  Future createPost({required FileDataModel image, required String caption}) async {
+    try {
+      await httpService.dio.post(
+        '/posts',
+        data: {"caption": caption, "fileData": image.toMap()},
+      );
+      HomeStore store = Modular.get();
+      store.changeTab(1);
+    } on DioException catch (e) {
+      Utils.showError(e.response?.data);
+    }
+  }
 
-    return data.map((e) => CommentModel.fromMap(e)).toList();
+  Future<List<PostModel>> getMyPosts({required int userId}) async {
+    try {
+      final response = await httpService.dio.get('/posts/user/$userId');
+
+      List data = response.data;
+      return data.map((json) {
+        return PostModel.fromMap(json);
+      }).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<CommentModel>> getComments({required int postId}) async {
+    try {
+      final response = await httpService.dio.get('/comments/post/${postId}');
+      List data = response.data;
+
+      return data.map((json) {
+        return CommentModel.fromMap(json);
+      }).toList();
+    } catch (e) {
+      return [];
+    }
   }
 }

@@ -25,15 +25,29 @@ class ProfilePageState extends State<ProfilePage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  /// HEADER
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       children: [
                         CircleAvatar(
-                          radius: 40,
+                          radius: constraints.maxWidth * 0.1,
                           backgroundImage: store.getAvatar() != null
                               ? NetworkImage(store.getAvatar()!.url!)
+                              : null,
+                          child: store.getAvatar() == null
+                              ? Text(
+                                  store
+                                      .getName()
+                                      .split(' ')
+                                      .map((e) => e[0])
+                                      .take(2)
+                                      .join()
+                                      .toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: constraints.maxWidth * 0.1,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
                               : null,
                         ),
 
@@ -59,6 +73,12 @@ class ProfilePageState extends State<ProfilePage> {
                               ),
                             ],
                           ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            store.logout();
+                          },
+                          icon: Icon(Icons.logout),
                         ),
                       ],
                     ),
@@ -113,10 +133,20 @@ class ProfilePageState extends State<ProfilePage> {
                         itemBuilder: (_, index) {
                           PostModel postModel = asyncSnapshot.data![index];
                           return GestureDetector(
-                            onTap: () {
-                              Modular.to.pushNamed("/post_detail", arguments: postModel);
+                            onTap: () async {
+                              await Modular.to.pushNamed(
+                                "/post_detail",
+                                arguments: postModel,
+                              );
+                              setState(() {});
                             },
-                            child: Image.network(postModel.mediaUrl!, fit: BoxFit.cover),
+                            child: Image.network(
+                              postModel.media!.url!.replaceAll(
+                                "http://localhost:8080/",
+                                "http://10.0.2.2:8080/",
+                              ),
+                              fit: BoxFit.cover,
+                            ),
                           );
                         },
                       );
