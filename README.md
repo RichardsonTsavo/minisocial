@@ -74,23 +74,25 @@ lib/app
 - modules
 
 
-```
-o login
-o register
-o home
-▪ feed
-▪ create_post
-▪ profile
-o post_detail
-```
-- shared
-    o models
-    o repositories
-    o services
-    o utils
-    o widgets
-- app_module.dart
-- app_widget.dart
+lib/app
+├── modules/
+│ ├── login/
+│ ├── register/
+│ ├── home/
+│ │     ├── feed/
+│ │     ├── create_post/
+│ │     └── profile/
+│ └── post_detail/
+│
+├── shared/
+│ ├── models/
+│ ├── repositories/
+│ ├── services/
+│ ├── utils/
+│ └── widgets/
+│
+├── app_module.dart
+└── app_widget.dart
 
 Essa organização permite separar responsabilidades e facilita a escalabilidade da
 aplicação.
