@@ -159,16 +159,16 @@ solicita autenticação biométrica antes de liberar o acesso à aplicação.
 # Como executar o projeto
 
 ## Requisitos
-
+```
 - Front-end
-    o Flutter SDK
-    o Dart
-    o Android Studio ou VSCode
+    - Flutter SDK
+    - Dart
+    - Android Studio ou VSCode
 - Back-end
-    o SpringBoot
-    o Java 17
-    o Maven
-
+    - SpringBoot
+    - Java 17
+    - Maven
+```
 ## Mobile
 
 flutter pub get
