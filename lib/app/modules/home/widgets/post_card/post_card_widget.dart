@@ -42,7 +42,23 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   CircleAvatar(
                     radius: 18,
-                    backgroundImage: NetworkImage(store.post.userAvatar!.url!),
+                    backgroundImage: store.post.userAvatar != null
+                        ? NetworkImage(store.post.userAvatar!.url!)
+                        : null,
+                    child: store.post.userAvatar == null
+                        ? Text(
+                            store.post.userName!
+                                .split(' ')
+                                .map((e) => e[0])
+                                .take(2)
+                                .join()
+                                .toUpperCase(),
+                            style: TextStyle(
+                              fontSize: constraints.maxWidth * 0.04,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
                   ),
 
                   const SizedBox(width: 10),
